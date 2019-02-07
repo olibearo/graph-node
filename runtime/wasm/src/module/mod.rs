@@ -51,6 +51,7 @@ const BIG_INT_MOD: usize = 23;
 const GAS_FUNC_INDEX: usize = 24;
 const TYPE_CONVERSION_BYTES_TO_BASE_58_INDEX: usize = 25;
 
+// TODO: add subgraph version property
 pub struct WasmiModuleConfig<T, L, S> {
     pub subgraph_id: SubgraphDeploymentId,
     pub data_source: DataSource,
@@ -207,21 +208,34 @@ where
     ) -> Result<Vec<EntityOperation>, FailureError> {
         self.start_time = Instant::now();
 
+        // TODO: Use the subgraph version to decide which struct to use here
         // Prepare an EthereumEvent for the WASM runtime
-        let event = EthereumEventData {
-            block: EthereumBlockData::from(&self.ctx.block.block),
-            transaction: EthereumTransactionData::from(self.ctx.transaction.deref()),
-            address: log.address,
-            log_index: log.log_index.unwrap_or(U256::zero()),
-            transaction_log_index: log.transaction_log_index.unwrap_or(U256::zero()),
-            log_type: log.log_type.clone(),
-            params,
-        };
+        let event = RuntimeValue::from(self.asc_new(if (version > Version::parse("0.0.1")) {
+            &EthereumEventData {
+                block: EthereumBlockData::from(&self.ctx.block.block),
+                transaction: EthereumTransactionDataV2::from(self.ctx.transaction.deref()),
+                address: log.address,
+                log_index: log.log_index.unwrap_or(U256::zero()),
+                transaction_log_index: log.transaction_log_index.unwrap_or(U256::zero()),
+                log_type: log.log_type.clone(),
+                params,
+            }
+        } else {
+            &EthereumEventData {
+                block: EthereumBlockData::from(&self.ctx.block.block),
+                transaction: EthereumTransactionData::from(self.ctx.transaction.deref()),
+                address: log.address,
+                log_index: log.log_index.unwrap_or(U256::zero()),
+                transaction_log_index: log.transaction_log_index.unwrap_or(U256::zero()),
+                log_type: log.log_type.clone(),
+                params,
+            }
+        }));
 
         // Invoke the event handler
         let result = self.module.clone().invoke_export(
             handler_name,
-            &[RuntimeValue::from(self.asc_new(&event))],
+            &[event],
             &mut self,
         );
 

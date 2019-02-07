@@ -287,7 +287,25 @@ impl ToAscObj<AscEthereumTransaction> for EthereumTransactionData {
     }
 }
 
-impl ToAscObj<AscEthereumEvent> for EthereumEventData {
+impl ToAscObj<AscEthereumTransactionV2> for EthereumTransactionDataV2 {
+    fn to_asc_obj<H: AscHeap>(&self, heap: &mut H) -> AscEthereumTransactionV2 {
+        AscEthereumTransactionV2 {
+            hash: heap.asc_new(&self.hash),
+            index: heap.asc_new(&BigInt::from(self.index)),
+            from: heap.asc_new(&self.from),
+            to: self
+                .to
+                .map(|to| heap.asc_new(&to))
+                .unwrap_or_else(|| AscPtr::null()),
+            value: heap.asc_new(&BigInt::from_unsigned_u256(&self.value)),
+            gas_used: heap.asc_new(&BigInt::from_unsigned_u256(&self.gas_used)),
+            gas_price: heap.asc_new(&BigInt::from_unsigned_u256(&self.gas_price)),
+            input: heap.asc_new(&BigInt::from_unsigned_u256(&self.input)),
+        }
+    }
+}
+
+impl ToAscObj<AscEthereumEvent> for EthereumEventData<T> {
     fn to_asc_obj<H: AscHeap>(&self, heap: &mut H) -> AscEthereumEvent {
         AscEthereumEvent {
             address: heap.asc_new(&self.address),

@@ -111,15 +111,44 @@ impl<'a> From<&'a Transaction> for EthereumTransactionData {
     }
 }
 
+// Ethereum transaction data.
+#[derive(Clone, Debug)]
+pub struct EthereumTransactionDataV2 {
+    // TODO: Name with the proper version
+    pub hash: H256,
+    pub index: U128,
+    pub from: H160,
+    pub to: Option<H160>,
+    pub value: U256,
+    pub gas_used: U256,
+    pub gas_price: U256,
+    pub input: Bytes,
+}
+
+impl<'a> From<&'a Transaction> for EthereumTransactionDataV2 {
+    fn from(tx: &'a Transaction) -> EthereumTransactionDataV2 {
+        EthereumTransactionDataV2 {
+            hash: tx.hash,
+            index: tx.transaction_index.unwrap(),
+            from: tx.from,
+            to: tx.to,
+            value: tx.value,
+            gas_used: tx.gas,
+            gas_price: tx.gas_price,
+            input: tx.input,
+        }
+    }
+}
+
 /// An Ethereum event logged from a specific contract address and block.
 #[derive(Debug)]
-pub struct EthereumEventData {
+pub struct EthereumEventData<T> {
     pub address: Address,
     pub log_index: U256,
     pub transaction_log_index: U256,
     pub log_type: Option<String>,
     pub block: EthereumBlockData,
-    pub transaction: EthereumTransactionData,
+    pub transaction: T,
     pub params: Vec<LogParam>,
 }
 
