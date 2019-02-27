@@ -11,8 +11,8 @@ extern crate serde;
 #[macro_use]
 extern crate serde_json;
 extern crate lazy_static;
-extern crate serde_yaml;
 extern crate semver;
+extern crate serde_yaml;
 
 mod graphql;
 mod log;
