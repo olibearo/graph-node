@@ -620,13 +620,15 @@ impl TryFromValue for EthereumContractSourceEntity {
 }
 
 #[derive(Debug)]
-pub struct EthereumContractMappingEntity {
+struct EthereumContractMappingEntity {
     pub kind: String,
     pub api_version: String,
     pub language: String,
     pub file: String,
     pub entities: Vec<String>,
     pub abis: Vec<EthereumContractAbiEntity>,
+    pub block_handler: EthereumBlockHandlerEntity,
+    pub transaction_handlers: Vec<EthereumTransactionHandlerEntity>,
     pub event_handlers: Vec<EthereumContractEventHandlerEntity>,
 }
 
@@ -762,10 +764,20 @@ impl TryFromValue for EthereumContractAbiEntity {
     }
 }
 
+pub struct EthereumBlockHandlerEntity {
+    handler: String,
+}
+
+#[derive(Debug)]
+pub struct EthereumTransactionHandlerEntity {
+    function: String,
+    handler: String,
+}
+
 #[derive(Debug)]
 pub struct EthereumContractEventHandlerEntity {
-    pub event: String,
-    pub handler: String,
+    event: String,
+    handler: String,
 }
 
 impl TypedEntity for EthereumContractEventHandlerEntity {
