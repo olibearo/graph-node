@@ -63,7 +63,7 @@ pub mod prelude {
         BlockStream, BlockStreamBuilder, ChainHeadUpdate, ChainHeadUpdateListener, EthereumAdapter,
         EthereumAdapterError, EthereumBlock, EthereumBlockData, EthereumBlockPointer,
         EthereumContractCall, EthereumContractCallError
-        EthereumEventData, EthereumLogFilter, EthereumTransactionFilter, EthereumBlockFilter,
+        EthereumEventData, EthereumLogFilter, EthereumCallFilter, EthereumBlockFilter,
         EthereumNetworkIdentifier, EthereumTransactionData,
     };
     pub use crate::components::graphql::{
