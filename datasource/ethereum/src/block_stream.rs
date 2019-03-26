@@ -756,7 +756,7 @@ where
     fn load_blocks(
         &self,
         block_hashes: Vec<H256>,
-    ) -> impl Stream<Item = EthereumBlockWithTriggers, Error = Error> + Send {
+    ) -> impl Stream<Item = EthereumBlock, Error = Error> + Send {
         let ctx = self.clone();
 
         let block_batch_size: usize = env::var_os("ETHEREUM_BLOCK_BATCH_SIZE")
@@ -790,7 +790,7 @@ where
     fn load_block(
         &self,
         block_hash: H256,
-    ) -> impl Future<Item = EthereumBlockWithTriggers, Error = Error> + Send {
+    ) -> impl Future<Item = EthereumBlock, Error = Error> + Send {
         let ctx = self.clone();
 
         // Check store first
