@@ -57,7 +57,7 @@ struct ElasticLog {
     id: String,
     #[serde(flatten)]
     custom_id: HashMap<String, String>,
-    arguments: HashMap<String, String>,
+    arguments: HashMap<String, serde_json::value::Value>,
     timestamp: String,
     text: String,
     #[serde(serialize_with = "serialize_log_level")]
@@ -66,7 +66,7 @@ struct ElasticLog {
 }
 
 struct HashMapKVSerializer {
-    kvs: Vec<(String, String)>,
+    kvs: Vec<(String, serde_json::value::Value)>,
 }
 
 impl HashMapKVSerializer {
@@ -76,7 +76,7 @@ impl HashMapKVSerializer {
         }
     }
 
-    fn finish(self) -> HashMap<String, String> {
+    fn finish(self) -> HashMap<String, serde_json::value::Value> {
         let mut map = HashMap::new();
         self.kvs.into_iter().for_each(|(k, v)| {
             map.insert(k, v);
@@ -87,7 +87,7 @@ impl HashMapKVSerializer {
 
 impl Serializer for HashMapKVSerializer {
     fn emit_arguments(&mut self, key: Key, val: &fmt::Arguments) -> slog::Result {
-        Ok(self.kvs.push((key.into(), format!("{}", val))))
+        Ok(self.kvs.push((key.into(), json!(val))))
     }
 }
 
